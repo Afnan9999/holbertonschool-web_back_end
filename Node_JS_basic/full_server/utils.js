@@ -1,5 +1,4 @@
-const fs = require('fs');
-
+import fs from 'fs';
 function readDatabase(path) {
   return new Promise((resolve, reject) => { // eslint-disable-line consistent-return
     if (!path) {
