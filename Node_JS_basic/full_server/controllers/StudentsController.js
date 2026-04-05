@@ -2,22 +2,22 @@ import readDatabase from '../utils';
 
 export default class StudentsController {
   static getAllStudents(req, res) {
-    const databasePath = process.argv[2] || './database.csv';
+    const databasePath = process.argv[2];
 
     readDatabase(databasePath)
       .then((data) => {
-        let responseText = 'This is the list of our students\n';
+        let response = 'This is the list of our students\n';
 
         const fields = Object.keys(data).sort((a, b) =>
           a.toLowerCase().localeCompare(b.toLowerCase())
         );
 
         for (const field of fields) {
-          const students = data[field];
-          responseText += `Number of students in ${field}: ${students.length}. List: ${students.join(', ')}\n`;
+          const list = data[field];
+          response += `Number of students in ${field}: ${list.length}. List: ${list.join(', ')}\n`;
         }
 
-        res.status(200).send(responseText.trim());
+        res.status(200).send(response.trim());
       })
       .catch(() => {
         res.status(500).send('Cannot load the database');
@@ -32,12 +32,12 @@ export default class StudentsController {
       return;
     }
 
-    const databasePath = process.argv[2] || './database.csv';
+    const databasePath = process.argv[2];
 
     readDatabase(databasePath)
       .then((data) => {
-        const students = data[major] || [];
-        res.status(200).send(`List: ${students.join(', ')}`);
+        const list = data[major] || [];
+        res.status(200).send(`List: ${list.join(', ')}`);
       })
       .catch(() => {
         res.status(500).send('Cannot load the database');
