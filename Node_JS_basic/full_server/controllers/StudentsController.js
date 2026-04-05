@@ -2,22 +2,17 @@ import readDatabase from '../utils';
 
 export default class StudentsController {
   static getAllStudents(req, res) {
+    res.status(200).setHeader('Content-Type', 'text/plain');
     const databasePath = process.argv[2];
-
     readDatabase(databasePath)
       .then((data) => {
-        let response = 'This is the list of our students\n';
-
-        const fields = Object.keys(data).sort((a, b) =>
-          a.toLowerCase().localeCompare(b.toLowerCase())
-        );
-
-        for (const field of fields) {
-          const list = data[field];
-          response += `Number of students in ${field}: ${list.length}. List: ${list.join(', ')}\n`;
+        let responseText = 'This is the list of our students\n';
+        const fields = Object.keys(data).sort((a, b) => a.localeCompare(b, 'en', { sensitivity: 'base' }));
+        for (const f of fields) {
+          const students = data[f];
+          responseText += `Number of students in ${f}: ${students.length}. List: ${students.join(', ')}\n`;
         }
-
-        res.status(200).send(response.trim());
+        res.send(responseText);
       })
       .catch(() => {
         res.status(500).send('Cannot load the database');
@@ -25,22 +20,22 @@ export default class StudentsController {
   }
 
   static getAllStudentsByMajor(req, res) {
+    res.status(200).setHeader('Content-Type', 'text/plain');
     const { major } = req.params;
 
     if (major !== 'CS' && major !== 'SWE') {
-      res.status(500).send('Major parameter must be CS or SWE');
-      return;
+      return res.status(500).send('Major parameter must be CS or SWE');
     }
-
     const databasePath = process.argv[2];
-
     readDatabase(databasePath)
       .then((data) => {
-        const list = data[major] || [];
-        res.status(200).send(`List: ${list.join(', ')}`);
+        const students = data[major] || [];
+        res.send(`List: ${students.join(', ')}`);
       })
       .catch(() => {
         res.status(500).send('Cannot load the database');
       });
+
+    return undefined;
   }
 }
